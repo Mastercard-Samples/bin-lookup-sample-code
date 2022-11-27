@@ -40,6 +40,14 @@ Add the .p12 file to the certs folder. Then, you can go to the Examples folder a
 * CONSUMER_KEY - this is the key that identifies you as a user, you can get it from your project on Mastercard Developers
 * Keystore password - in the authenticationutils.load_signing_key method you need to pass this, it is a value shared with you privately when you are creating a project on Mastercard Developers 
 
+Once you have the correct credentials you can run the script(s) usinng the following command:
+
+```
+python script_name.py
+```
+
+Each script will make a live call to the API using your credentials and demonstrate the response you get in each scenario.
+
 ## Support <a name="support"></a>
 Please send an email to **apisupport@mastercard.com** with any questions or feedback you may have.
 
