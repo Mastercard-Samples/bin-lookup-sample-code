@@ -1,0 +1,2 @@
+requests
+mastercard-oauth1-signer
