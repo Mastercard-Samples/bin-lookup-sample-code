@@ -4,8 +4,8 @@ import oauth1.authenticationutils as authenticationutils
 from oauth1.signer import OAuthSigner
 import csv
 
-BASE_URL = 'Add Sandbox or Production BASE URL here'
-CONSUMER_KEY = 'Add you project consumer key here' 
+BASE_URL = 'https://sandbox.api.mastercard.com/binlookup/v2'
+CONSUMER_KEY = 'dq1RlXUmeqfHOXz3iCs_JM4cYXRpJVgvp_wzcw9Qb3a3c479!af2d2e8007f9409586e006241d1928960000000000000000' 
 
 # MCSigner
 # Helper class for signing request objects
@@ -18,7 +18,13 @@ class MCSigner(AuthBase):
         return request
 
 # Generate a signing key and use it, and consumer key, with the signer class
-signing_key = authenticationutils.load_signing_key('./certs/your.p12', 'keystorepassword')
+# signing_key = authenticationutils.load_signing_key('./certs/your.p12', 'keystorepassword') ## Comentado por mi
+signing_key = authenticationutils.load_signing_key(
+    r"C:\Users\Usuario\OneDrive\Desktop\Mastercard\Mastercard key\p12\matias-cert.p12",
+    "020122.C@ssi"
+)
+
+
 signer = MCSigner(CONSUMER_KEY, signing_key)
 
 print("Enter a 8 digit BIN:")
