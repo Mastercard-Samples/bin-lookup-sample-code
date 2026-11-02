@@ -27,25 +27,36 @@ class MCSigner(AuthBase):
         self.signer.sign_request(request.url, request)
         return request
 
-# Generate a signing key and use it, and consumer key, with the signer class
-signing_key = authenticationutils.load_signing_key(KEYSTORE_PATH, KEYSTORE_PASSWORD)
-signer = MCSigner(CONSUMER_KEY, signing_key)
 
-filters = [
-    {
-        "key": "customerName",
-        "value": "CITIBANK N.A."
-    },
-    {
-        "key": "productCode",
-        "value": "MCO"
-    }
-]
+def main():
+    # Generate a signing key and use it, and consumer key, with the signer class
+    signing_key = authenticationutils.load_signing_key(KEYSTORE_PATH, KEYSTORE_PASSWORD)
+    signer = MCSigner(CONSUMER_KEY, signing_key)
 
-resp = requests.post(
+    # Request body format:
+    # [
+    #   {"key": "customerName", "value": "Crown Credit Bank 4"},
+    #   {"key": "productCode", "value": "MUS"}
+    # ]
+    filters = [
+        {
+            "key": "customerName",
+            "value": "Crown Credit Bank 4"
+        },
+        {
+            "key": "productCode",
+            "value": "MUS"
+        }
+    ]
+
+    resp = requests.post(
         f'{BASE_URL}/bin-ranges',
         auth=signer,
-        json = filters
+        json=filters
     )
 
-print(f"There are {resp.json()['totalItems']} items that match")
+    print(f"There are {resp.json()['totalItems']} items that match")
+
+
+if __name__ == "__main__":
+    main()

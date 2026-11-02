@@ -82,18 +82,17 @@ def fetch_data_from_api(base_url, initial_page=1, post_payload={}, signer=None, 
 all_records = fetch_data_from_api(base_url=f'{BASE_URL}/bin-ranges', initial_page=1, post_payload={}, signer=signer)
 
 # Set up a file to store the results from the API
-data_file = open('account_ranges.csv', 'w')
-csv_writer = csv.writer(data_file)
+# Use UTF-8 explicitly so Unicode values like √ are written correctly on Windows, macOS, and Linux.
+with open('account_ranges.csv', 'w', newline='', encoding='utf-8') as data_file:
+    csv_writer = csv.writer(data_file)
 
-# A for loop to go through the JSON objects and convert them into CSV rows
-count = 0
-for item in all_records:
-    if count == 0:
-        # Writing headers of CSV file
-        header = item.keys()
-        csv_writer.writerow(header)
-        count += 1
-    # Writing data of CSV file
-    csv_writer.writerow(item.values())
-
-data_file.close()
+    # A for loop to go through the JSON objects and convert them into CSV rows
+    count = 0
+    for item in all_records:
+        if count == 0:
+            # Writing headers of CSV file
+            header = list(item.keys())
+            csv_writer.writerow(header)
+            count += 1
+        # Writing data of CSV file
+        csv_writer.writerow(item.values())

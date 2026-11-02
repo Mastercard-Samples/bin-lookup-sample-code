@@ -55,7 +55,6 @@ pip install -r requirements.txt
    - the keystore password
 4. Place the `.p12` file in the `certs` folder.
 5. Update the shared credentials in [Examples/config.json](Examples/config.json) with your project values:
-   - `host` - Sandbox or production API base URL
    - `consumerKey` - your Mastercard project consumer key
    - `keystoreP12Path` - full path to your `.p12` certificate
    - `keystorePassword` - your keystore password
@@ -80,7 +79,14 @@ python Examples/single-lookup-example.py
 
 File: `Examples/filtering-example.py`
 
-This example posts filter criteria to the BIN range endpoint and returns the total number of matching items.
+This example posts filter criteria to the BIN range endpoint and returns the total number of matching items. You can edit the filter list in the script before running it:
+
+```python
+filters = [
+    {"key": "customerName", "value": "Crown Credit Bank 4"},
+    {"key": "productCode", "value": "MUS"}
+]
+```
 
 Run it with:
 
@@ -104,15 +110,12 @@ python Examples/pagination-example.py
 
 File: `Examples/delta-example.py`
 
-This example validates a local base snapshot by applying a delta and comparing the resulting data to the live BIN range results. It reads the shared credentials from `Examples/config.json` and supports a local snapshot such as `Examples/snapshot_3355.csv`.
+This example validates a local base snapshot by applying a delta and comparing the resulting data to the live BIN range results. It uses the local snapshot `Examples/snapshot_3355.csv`.
 
 Run it with:
 
 ```bash
-python Examples/delta-example.py \
-  --config Examples/config.json \
-  --input-snapshot-base Examples/snapshot_3355.csv \
-  --save-csv
+python Examples/delta-example.py --config Examples/config.json --input-snapshot-base Examples/snapshot_3355.csv --save-csv
 ```
 
 The helper package used by this example lives in `Examples/delta-example-helpers` and is installed automatically when you install the repository requirements.
@@ -125,7 +128,7 @@ The helper package used by this example lives in `Examples/delta-example-helpers
 
 ## Support
 
-Please email **apisupport@mastercard.com** with any questions or feedback.
+Email DBN.BinTableResource.Support@mastercard.com with any questions or feedback.
 
 ## License
 
