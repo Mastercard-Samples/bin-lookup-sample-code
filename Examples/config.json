@@ -1,0 +1,6 @@
+{
+  "host": "https://sandbox.api.mastercard.com/bin-resources",
+  "consumerKey": "your-consumer-key",
+  "keystoreP12Path": "/path/to/your-sandbox.p12",
+  "keystorePassword": "your-password"
+}

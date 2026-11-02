@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "delta-example-helpers"
+version = "0.1.0"
+description = "Shared helpers for the BinLookup delta reference application"
+requires-python = ">=3.8"
+dependencies = [
+  "mastercard-oauth1-signer>=1.9.1",
+  "requests>=2.32.5",
+]
+
+[tool.setuptools]
+package-dir = {"delta_example_helpers" = "."}
+packages = ["delta_example_helpers"]

@@ -1,11 +1,21 @@
+import json
+import os
+
 import requests
 from requests.auth import AuthBase
 import oauth1.authenticationutils as authenticationutils
 from oauth1.signer import OAuthSigner
-import csv
 
-BASE_URL = 'Add Sandbox or Production BASE URL here'
-CONSUMER_KEY = 'Add you project consumer key here' 
+EXAMPLES_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_PATH = os.path.join(EXAMPLES_DIR, "config.json")
+
+with open(CONFIG_PATH, encoding="utf-8") as config_file:
+    config = json.load(config_file)
+
+BASE_URL = config["host"]
+CONSUMER_KEY = config["consumerKey"]
+KEYSTORE_PATH = config["keystoreP12Path"]
+KEYSTORE_PASSWORD = config["keystorePassword"]
 
 # MCSigner
 # Helper class for signing request objects
@@ -18,7 +28,7 @@ class MCSigner(AuthBase):
         return request
 
 # Generate a signing key and use it, and consumer key, with the signer class
-signing_key = authenticationutils.load_signing_key('./certs/your.p12', 'keystorepassword')
+signing_key = authenticationutils.load_signing_key(KEYSTORE_PATH, KEYSTORE_PASSWORD)
 signer = MCSigner(CONSUMER_KEY, signing_key)
 
 print("Enter a 8 digit BIN:")
@@ -34,4 +44,4 @@ resp = requests.post(
         json = lookup_bin
     )
 
-print (resp.json())
+print(resp.json())

@@ -2,11 +2,12 @@
 
 ## Overview
 
-This repository contains Python examples for the [BIN Lookup API](https://developer.mastercard.com/bin-table-resource/documentation/). The sample scripts demonstrate three common use cases:
+This repository contains Python examples for the [BIN Lookup API](https://developer.mastercard.com/bin-table-resource/documentation/). The sample scripts demonstrate four common use cases:
 
 - single real-time BIN lookup
 - filtered data retrieval from the full download endpoint
 - paginated download of all BIN range records
+- delta validation against the live BIN ranges
 
 ## Requirements
 
@@ -36,9 +37,12 @@ pip install -r requirements.txt
 ├── certs/
 │   └── your.p12
 ├── Examples/
+│   ├── config.json
 │   ├── single-lookup-example.py
 │   ├── filtering-example.py
-│   └── pagination-example.py
+│   ├── pagination-example.py
+│   ├── delta-example.py
+│   └── delta-example-helpers/
 ```
 
 ## Setup
@@ -50,12 +54,13 @@ pip install -r requirements.txt
    - the consumer key
    - the keystore password
 4. Place the `.p12` file in the `certs` folder.
-5. Update the following values in the script you want to run:
-   - `BASE_URL` - Sandbox or production API base URL
-   - `CONSUMER_KEY` - your Mastercard project consumer key
-   - keystore password in `authenticationutils.load_signing_key(...)`
+5. Update the shared credentials in [Examples/config.json](Examples/config.json) with your project values:
+   - `host` - Sandbox or production API base URL
+   - `consumerKey` - your Mastercard project consumer key
+   - `keystoreP12Path` - full path to your `.p12` certificate
+   - `keystorePassword` - your keystore password
 
-Each script contains placeholder values that you must replace before running it.
+The scripts all read from this shared config file.
 
 ## Examples
 
@@ -94,6 +99,23 @@ Run it with:
 ```bash
 python Examples/pagination-example.py
 ```
+
+### 4. Delta Validation
+
+File: `Examples/delta-example.py`
+
+This example validates a local base snapshot by applying a delta and comparing the resulting data to the live BIN range results. It reads the shared credentials from `Examples/config.json` and supports a local snapshot such as `Examples/snapshot_3355.csv`.
+
+Run it with:
+
+```bash
+python Examples/delta-example.py \
+  --config Examples/config.json \
+  --input-snapshot-base Examples/snapshot_3355.csv \
+  --save-csv
+```
+
+The helper package used by this example lives in `Examples/delta-example-helpers` and is installed automatically when you install the repository requirements.
 
 ## Notes
 
