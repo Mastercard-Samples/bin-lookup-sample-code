@@ -1,11 +1,22 @@
+import csv
+import json
+import os
+
 import requests
 from requests.auth import AuthBase
 import oauth1.authenticationutils as authenticationutils
 from oauth1.signer import OAuthSigner
-import csv
 
-BASE_URL = 'Add Sandbox or Production BASE URL here'
-CONSUMER_KEY = 'Add you project consumer key here' 
+EXAMPLES_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_PATH = os.path.join(EXAMPLES_DIR, "config.json")
+
+with open(CONFIG_PATH, encoding="utf-8") as config_file:
+    config = json.load(config_file)
+
+BASE_URL = config["host"]
+CONSUMER_KEY = config["consumerKey"]
+KEYSTORE_PATH = config["keystoreP12Path"]
+KEYSTORE_PASSWORD = config["keystorePassword"]
 
 # MCSigner
 # Helper class for signing request objects
@@ -18,7 +29,7 @@ class MCSigner(AuthBase):
         return request
 
 # Generate a signing key and use it, and consumer key, with the signer class
-signing_key = authenticationutils.load_signing_key('./certs/sandbox.p12', 'keystorepassword')
+signing_key = authenticationutils.load_signing_key(KEYSTORE_PATH, KEYSTORE_PASSWORD)
 signer = MCSigner(CONSUMER_KEY, signing_key)
 
 def fetch_data_from_api(base_url, initial_page=1, post_payload={}, signer=None, data=None):
@@ -35,28 +46,28 @@ def fetch_data_from_api(base_url, initial_page=1, post_payload={}, signer=None, 
         # Perform a POST request to the API
         response = requests.post(base_url, params=post_payload, auth=signer, json=data)
         response_data = response.json()
-        
+
         # Extract metadata
         current_page_number = response_data['currentPageNumber']
         total_pages = response_data['totalPages']
         total_items = response_data['totalItems']
-        
+
         # Extract the actual items
         items = response_data.get('items', [])
-        
+
         # Add the items from the current page to the master list
         all_items.extend(items)
-        
+
         # Update the total number of items downloaded
         total_items_downloaded += len(items)
-        
+
         # Print the current progress for reference
         print(f"Downloaded {len(items)} items from page {current_page_number}/{total_pages}.")
-        
+
         # Check if we have reached the last page
         if current_page_number >= total_pages:
             break
-        
+
         # Move to the next page
         current_page += 1
 
@@ -65,24 +76,23 @@ def fetch_data_from_api(base_url, initial_page=1, post_payload={}, signer=None, 
         print(f"Successfully downloaded all {total_items_downloaded} items.")
     else:
         print(f"Warning: Downloaded {total_items_downloaded} items, but expected {total_items} items.")
-    
+
     return all_items
 
 all_records = fetch_data_from_api(base_url=f'{BASE_URL}/bin-ranges', initial_page=1, post_payload={}, signer=signer)
 
 # Set up a file to store the results from the API
-data_file = open('account_ranges.csv', 'w')
-csv_writer = csv.writer(data_file)
+# Use UTF-8 explicitly so Unicode values like √ are written correctly on Windows, macOS, and Linux.
+with open('account_ranges.csv', 'w', newline='', encoding='utf-8') as data_file:
+    csv_writer = csv.writer(data_file)
 
-# A for loop to go through the JSON objects and convert them into CSV rows
-count = 0
-for item in all_records:
-    if count == 0:
-        # Writing headers of CSV file
-        header = item.keys()
-        csv_writer.writerow(header)
-        count += 1
-    # Writing data of CSV file
-    csv_writer.writerow(item.values())
- 
-data_file.close()
+    # A for loop to go through the JSON objects and convert them into CSV rows
+    count = 0
+    for item in all_records:
+        if count == 0:
+            # Writing headers of CSV file
+            header = list(item.keys())
+            csv_writer.writerow(header)
+            count += 1
+        # Writing data of CSV file
+        csv_writer.writerow(item.values())

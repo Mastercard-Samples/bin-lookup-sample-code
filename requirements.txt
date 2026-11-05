@@ -1,2 +1,3 @@
 requests
 mastercard-oauth1-signer
+-e ./Examples/delta-example-helpers
